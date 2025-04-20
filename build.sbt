@@ -31,9 +31,11 @@ lazy val bloomCore = project
 lazy val bloomApi = project
   .in(file("akka-bloom-api"))
   .settings(
-    name := "akka-bloom-core",
+    name := "akka-bloom-api",
     version := akkaBloomVersion,
-    scalaVersion := scala2Version
+    scalaVersion := scala2Version,
+    resolvers += akkaResolver,
+    libraryDependencies ++= akkaDependencies
   )
 
 lazy val bloomAkka =
@@ -68,5 +70,6 @@ lazy val examples =
       name := "akka-bloom-examples",
       version := akkaBloomVersion,
       scalaVersion := scala2Version,
+      libraryDependencies ++= akkaDependencies,
       mainClass := Some("com.example.bloom.examples.main.Main")
     )
