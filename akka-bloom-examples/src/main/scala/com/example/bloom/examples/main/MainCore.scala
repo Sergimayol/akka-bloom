@@ -13,12 +13,15 @@ import scala.concurrent.duration._
 import scala.concurrent.Future
 import scala.util.{Success, Failure}
 import akka.actor.typed.scaladsl.AskPattern._
+import akka.cluster.typed.{Cluster, Join}
+import akka.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
+import com.example.bloom.akka.cluster.BloomFilterClusterActor
 
-object Main extends App {
-  new Main().run()
+object MainCore extends App {
+  new MainCore().run()
 }
 
-class Main {
+class MainCore {
   def run(): Unit = {
     val filter = BloomFilter[String](size = 1000, numHashes = 5)
     filter.add("hello")
@@ -33,30 +36,6 @@ class Main {
 
     println("contains: hello? " + defaultFilter.mightContain("hello"))
     println("contains: world? " + defaultFilter.mightContain("world"))
-
-    implicit val timeout: Timeout = 3.seconds
-
-    val system: ActorSystem[BloomFilterCommand[String]] =
-      ActorSystem(BloomFilterActor[String](1000, 5), "BloomFilterSystem")
-
-    import system.executionContext
-    implicit val scheduler = system.scheduler
-
-    system ! Add("apple")
-    system ! Add("banana")
-
-    val queries = List("apple", "grape", "banana")
-
-    queries.foreach { item =>
-      val response: Future[Boolean] =
-        system.ask(replyTo => MightContain(item, replyTo))
-
-      response.onComplete {
-        case Success(result) =>
-          println(s"'$item' might be in the BloomFilter? $result")
-        case Failure(ex) => println(s"Error checking '$item': ${ex.getMessage}")
-      }
-    }
 
   }
 }

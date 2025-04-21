@@ -1,2 +1,3 @@
 # akka-bloom
-Bloom filters implemented in Scala with Akka
+
+Bloom filters implemented in Scala with Akka Actors
