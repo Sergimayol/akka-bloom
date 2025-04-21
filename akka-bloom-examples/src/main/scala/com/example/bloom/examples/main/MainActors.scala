@@ -16,6 +16,7 @@ import akka.actor.typed.scaladsl.AskPattern._
 import akka.cluster.typed.{Cluster, Join}
 import akka.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity}
 import com.example.bloom.akka.cluster.BloomFilterClusterActor
+import com.example.bloom.akka.ScalableBloomFilterActor
 
 object MainActors extends App {
   new MainActors().run()
@@ -27,6 +28,12 @@ class MainActors {
 
     val system: ActorSystem[BloomFilterCommand[String]] =
       ActorSystem(BloomFilterActor[String](1000, 5), "BloomFilterSystem")
+
+    // val system: ActorSystem[BloomFilterCommand[String]] =
+    //   ActorSystem(
+    //     ScalableBloomFilterActor[String](1000, 5),
+    //     "ScalableBloomFilterActorSystem"
+    //   )
 
     import system.executionContext
     implicit val scheduler = system.scheduler
@@ -43,7 +50,10 @@ class MainActors {
       response.onComplete {
         case Success(result) =>
           println(s"'$item' might be in the BloomFilter? $result")
-        case Failure(ex) => println(s"Error checking '$item': ${ex.getMessage}")
+          system.terminate()
+        case Failure(ex) =>
+          println(s"Error checking '$item': ${ex.getMessage}")
+          system.terminate()
       }
     }
   }

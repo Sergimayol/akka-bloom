@@ -5,9 +5,8 @@ import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.ActorRef
 
 import com.example.bloom.akka.api.{BloomFilterCommand, Add, MightContain}
-import com.example.bloom.core.BloomFilter
+import com.example.bloom.core.{BloomFilter, ScalableBloomFilter}
 import akka.actor.typed.ActorSystem
-import com.example.bloom.akka.BloomFilterActor
 import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.concurrent.Future
@@ -37,5 +36,9 @@ class MainCore {
     println("contains: hello? " + defaultFilter.mightContain("hello"))
     println("contains: world? " + defaultFilter.mightContain("world"))
 
+    val scalableBloomFilter = new ScalableBloomFilter[String](100, 3)
+    scalableBloomFilter.add("hello")
+    println("contains: hello? " + scalableBloomFilter.mightContain("hello"))
+    println("contains: world? " + scalableBloomFilter.mightContain("world"))
   }
 }
