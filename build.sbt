@@ -9,7 +9,12 @@ lazy val akkaResolver =
   "Akka library repository".at("https://repo.akka.io/maven")
 
 val akkaDependencies = Seq(
-  "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion
+  "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion,
+  "com.typesafe.akka" %% "akka-actor-testkit-typed" % AkkaVersion % Test
+)
+
+val commonDependencies = Seq(
+  "org.scalatest" %% "scalatest" % "3.2.17" % Test
 )
 
 lazy val root = (project in file("."))
@@ -25,7 +30,8 @@ lazy val bloomCore = project
   .settings(
     name := "akka-bloom-core",
     version := akkaBloomVersion,
-    scalaVersion := scala2Version
+    scalaVersion := scala2Version,
+    libraryDependencies ++= commonDependencies
   )
 
 lazy val bloomApi = project
@@ -35,7 +41,7 @@ lazy val bloomApi = project
     version := akkaBloomVersion,
     scalaVersion := scala2Version,
     resolvers += akkaResolver,
-    libraryDependencies ++= akkaDependencies
+    libraryDependencies ++= akkaDependencies ++ commonDependencies
   )
 
 lazy val bloomAkka =
@@ -47,7 +53,7 @@ lazy val bloomAkka =
       version := akkaBloomVersion,
       scalaVersion := scala2Version,
       resolvers += akkaResolver,
-      libraryDependencies ++= akkaDependencies
+      libraryDependencies ++= akkaDependencies ++ commonDependencies
     )
 
 lazy val bloomCluster =
@@ -59,7 +65,7 @@ lazy val bloomCluster =
       version := akkaBloomVersion,
       scalaVersion := scala2Version,
       resolvers += akkaResolver,
-      libraryDependencies ++= akkaDependencies
+      libraryDependencies ++= akkaDependencies ++ commonDependencies
     )
 
 lazy val examples =
